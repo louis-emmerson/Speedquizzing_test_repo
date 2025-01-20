@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQ Web App</title>
+
+</head>
+<body>
+  <h1>SpeedQuizzing Web App</h1>
+
+  <!-- Display incoming messages -->
+  <div id="log"></div>
+
+  <!-- Color Picker and Button -->
+  <div id="colorPicker">
+    <input type="color" id="colorInput" value="#ff0000">
+    <button id="sendColorBtn">Send Keyboard Color</button>
+  </div>
+
+  <!-- Connection Status -->
+  <div class="status" id="status">Status: <span class="disconnected">Disconnected</span></div>
+
+  <script>
+    // Create a WebSocket/TCP connection (using WebSocket for simplicity)
+    let socket;
+    const log = document.getElementById("log");
+    const status = document.getElementById("status");
+    const colorInput = document.getElementById("colorInput");
+    const sendColorBtn = document.getElementById("sendColorBtn");
+
+    // Initialize WebSocket connection to the server
+    function connectToServer() {
+      socket = new WebSocket("ws://localhost:5500"); // Update to TCP if needed
+
+       // Update connection status
+       socket.addEventListener("open", () => {
+        status.innerHTML = 'Status: <span class="connected">Connected</span>';
+      });
+
+      socket.addEventListener("close", () => {
+        status.innerHTML = 'Status: <span class="disconnected">Disconnected</span>';
+      });
+
+    }
+
+
+    // Connect to the server
+    connectToServer();
+  </script>
+
+<style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    #log {
+      width: 100%;
+      height: 300px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+    }
+
+    #colorPicker {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    #colorInput {
+      margin-right: 10px;
+      padding: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .status {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .connected {
+      color: green;
+    }
+
+    .disconnected {
+      color: red;
+    }
+  </style>
+
+</body>
+</html>
