@@ -22,28 +22,24 @@
   <div class="status" id="status">Status: <span class="disconnected">Disconnected</span></div>
 
   <script>
-    // Create a WebSocket/TCP connection (using WebSocket for simplicity)
+    // Create a TCP connection
     let socket;
     const log = document.getElementById("log");
     const status = document.getElementById("status");
     const colorInput = document.getElementById("colorInput");
     const sendColorBtn = document.getElementById("sendColorBtn");
 
-    // Initialize WebSocket connection to the server
+    // Initialize TCP connection to the server
     function connectToServer() {
-      socket = new WebSocket("ws://localhost:5500"); // Update to TCP if needed
-
-       // Update connection status
-       socket.addEventListener("open", () => {
+      socket = new net.Socket();
+      socket.connect(5500, 'localhost', () => {
         status.innerHTML = 'Status: <span class="connected">Connected</span>';
       });
 
-      socket.addEventListener("close", () => {
+      socket.on('close', () => {
         status.innerHTML = 'Status: <span class="disconnected">Disconnected</span>';
       });
-
     }
-
 
     // Connect to the server
     connectToServer();
