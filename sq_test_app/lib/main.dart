@@ -41,17 +41,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void _connectSocket() {
     channel = WebSocketChannel.connect(Uri.parse('ws://192.168.4.187:5500'));
 
-    channel.stream.listen(
-      (message) {
-        print('Message received: $message');
-      },
-      onDone: () {
-        print('Connection closed');
-      },
-      onError: (error) {
-        print('Error: $error');
-      },
-    );
+    channel.stream.listen((message) {
+      String ascii = String.fromCharCodes(message);
+
+      Map<String,dynamic> decoded = jsonDecode(ascii);
+
+      print(decoded);
+    });
   }
 
   void _updateColor(String color) {
