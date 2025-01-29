@@ -105,11 +105,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: TextStyle(color: Colors.white),
               ),
             ),
-            TextField(
-              controller: msgTextController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Enter a message to send to web app',
+            Container(
+              margin: EdgeInsets.only(left: 5,right: 5,top: 20),
+              child: TextField(
+                controller: msgTextController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter a message to send to web app',
+                ),
               ),
             ),
             ElevatedButton(
