@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _connectSocket() {
-    channel = WebSocketChannel.connect(Uri.parse('ws://localhost:5500'));
+    channel = WebSocketChannel.connect(Uri.parse('ws://192.168.4.187:5500'));
 
     channel.stream.listen(
       (message) {
