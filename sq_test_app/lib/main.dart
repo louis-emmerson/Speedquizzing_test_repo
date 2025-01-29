@@ -105,6 +105,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: TextStyle(color: Colors.white),
               ),
             ),
+            TextField(
+              controller: msgTextController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Enter a message to send to web app',
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => {_sendTextMsg(msgTextController.text)},
+              child: const Text("Send Message"),
+            ),
           ],
         ),
       ),
