@@ -1,107 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SQ Web App</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQ Web App</title>
+  </head>
+  <body>
+    <h1>SpeedQuizzing Web App</h1>
 
-</head>
-<body>
-  <h1>SpeedQuizzing Web App</h1>
+    <!-- Display incoming messages -->
+    <div id="log">
+      <button id="red-button" style="background-color: white; color:black; border:solid red 2px;">
+        Red Button
+      </button>
+      <button id="blue-button" style="background-color: white; color:black; border:solid blue 2px;">
+        Blue Button
+      </button>
+      <button id="green-button" style="background-color: white; color:black; border:solid green 2px;">
+        Green Button
+      </button>
+    </div>
 
-  <!-- Display incoming messages -->
-  <div id="log"></div>
+    <!-- Color Picker and Button -->
+    <div id="colorPicker">
+      <input type="color" id="colorInput" value="#ff0000" />
+      <button id="sendColorBtn">Send Keyboard Color</button>
+    </div>
 
-  <!-- Color Picker and Button -->
-  <div id="colorPicker">
-    <input type="color" id="colorInput" value="#ff0000">
-    <button id="sendColorBtn">Send Keyboard Color</button>
-  </div>
+    <!-- Connection Status -->
+    <div class="status" id="status">
+      Status: <span class="disconnected">Disconnected</span>
+    </div>
 
-  <!-- Connection Status -->
-  <div class="status" id="status">Status: <span class="disconnected">Disconnected</span></div>
+    <script>
+      // Create a WebSocket/TCP connection (using WebSocket for simplicity)
+      let socket
+      const log = document.getElementById("log")
+      const status = document.getElementById("status")
+      const colorInput = document.getElementById("colorInput")
+      const sendColorBtn = document.getElementById("sendColorBtn")
 
-  <script>
-    // Create a WebSocket/TCP connection (using WebSocket for simplicity)
-    let socket;
-    const log = document.getElementById("log");
-    const status = document.getElementById("status");
-    const colorInput = document.getElementById("colorInput");
-    const sendColorBtn = document.getElementById("sendColorBtn");
+      // Initialize WebSocket connection to the server
+      function connectToServer() {
+        socket = new WebSocket("ws://localhost:5500") // Update to TCP if needed
 
-    // Initialize WebSocket connection to the server
-    function connectToServer() {
-      socket = new WebSocket("ws://localhost:5500"); // Update to TCP if needed
+        // Update connection status
+        socket.addEventListener("open", () => {
+          status.innerHTML = 'Status: <span class="connected">Connected</span>'
+        })
 
-       // Update connection status
-       socket.addEventListener("open", () => {
-        status.innerHTML = 'Status: <span class="connected">Connected</span>';
-      });
+        socket.addEventListener("message", (msg) => {
+          msg.data.text().then((data) => {
+            const colorMsg = JSON.parse(data)
+            const targetButton = `${colorMsg.color}-button`
+            document.getElementById(targetButton).style.background=colorMsg.color;
 
-      socket.addEventListener("close", () => {
-        status.innerHTML = 'Status: <span class="disconnected">Disconnected</span>';
-      });
+          })
+        })
 
-    }
+        socket.addEventListener("close", () => {
+          status.innerHTML =
+            'Status: <span class="disconnected">Disconnected</span>'
+        })
+      }
 
+      // Connect to the server
+      connectToServer()
+    </script>
 
-    // Connect to the server
-    connectToServer();
-  </script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
 
-<style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
+      #log {
+        width: 100%;
+        height: 300px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        overflow-y: auto;
+        background-color: #f9f9f9;
+      }
 
-    #log {
-      width: 100%;
-      height: 300px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      overflow-y: auto;
-      background-color: #f9f9f9;
-    }
+      #colorPicker {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+      }
 
-    #colorPicker {
-      display: flex;
-      align-items: center;
-      margin-top: 20px;
-    }
+      #colorInput {
+        margin-right: 10px;
+        padding: 5px;
+      }
 
-    #colorInput {
-      margin-right: 10px;
-      padding: 5px;
-    }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
 
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+      button:hover {
+        background-color: #0056b3;
+      }
 
-    button:hover {
-      background-color: #0056b3;
-    }
+      .status {
+        margin-top: 20px;
+        font-size: 14px;
+      }
 
-    .status {
-      margin-top: 20px;
-      font-size: 14px;
-    }
+      .connected {
+        color: green;
+      }
 
-    .connected {
-      color: green;
-    }
-
-    .disconnected {
-      color: red;
-    }
-  </style>
-
-</body>
+      .disconnected {
+        color: red;
+      }
+    </style>
+  </body>
 </html>

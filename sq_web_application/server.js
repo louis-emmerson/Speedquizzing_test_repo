@@ -8,7 +8,7 @@ server.on("connection", (socket) => {
     console.log("New connection");
     
     socket.on("message", (msg) => {
-        console.log(msg.toString(''));
+        console.log(JSON.parse(msg));
         server.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
             client.send(msg);

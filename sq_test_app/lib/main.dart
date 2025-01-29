@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -29,6 +30,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late WebSocketChannel channel;
 
+  final msgTextController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -52,8 +55,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _updateColor(String color) {
-    channel.sink.add(color);
-    print('Sent color: $color');
+    final jsonData = jsonEncode({"color": color});
+    channel.sink.add(jsonData);
+  }
+
+  void _sendTextMsg(String msg) {
+    final msgData = jsonEncode({"message": msg});
+    channel.sink.add(msgData);
   }
 
   @override
@@ -74,16 +82,28 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               onPressed: () => _updateColor("red"),
-              child: const Text("Red"),
+              child: const Text(
+                "Red",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
               onPressed: () => _updateColor("blue"),
-              child: const Text("Blue"),
+              child: const Text(
+                "Blue",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               onPressed: () => _updateColor("green"),
-              child: const Text("Green"),
+              child: const Text(
+                "Green",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
