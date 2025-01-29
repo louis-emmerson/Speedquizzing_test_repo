@@ -29,8 +29,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late WebSocketChannel channel;
-
   final msgTextController = TextEditingController();
+  Color _containerColor = Colors.grey;
 
   @override
   void initState() {
@@ -39,14 +39,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _connectSocket() {
-    channel = WebSocketChannel.connect(Uri.parse('ws://192.168.4.187:5500'));
+    channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.145:5500'));
 
     channel.stream.listen((message) {
-      String ascii = String.fromCharCodes(message);
+      String asciiString = String.fromCharCodes(message);
+      Map<String, dynamic> decoded = jsonDecode(asciiString);
 
-      Map<String,dynamic> decoded = jsonDecode(ascii);
-
-      print(decoded);
+      if (decoded['color-input'] != null) {
+        setState(() {
+          _containerColor = Color(
+              int.parse(decoded['color-input'].replaceFirst("#", "0xff")));
+        });
+      }
     });
   }
 
@@ -80,26 +84,17 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               onPressed: () => _updateColor("red"),
-              child: const Text(
-                "Red",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text("Red", style: TextStyle(color: Colors.white)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
               onPressed: () => _updateColor("blue"),
-              child: const Text(
-                "Blue",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text("Blue", style: TextStyle(color: Colors.white)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               onPressed: () => _updateColor("green"),
-              child: const Text(
-                "Green",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text("Green", style: TextStyle(color: Colors.white)),
             ),
             Container(
               margin: const EdgeInsets.only(left: 5, right: 5, top: 20),
@@ -112,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             ElevatedButton(
-              onPressed: () => {_sendTextMsg(msgTextController.text)},
+              onPressed: () => _sendTextMsg(msgTextController.text),
               child: const Text("Send Message"),
             ),
             Container(
@@ -126,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Container(
                     width: double.infinity,
                     height: 300,
-                    decoration: const BoxDecoration(color: Colors.grey),
+                    decoration: BoxDecoration(color: _containerColor),
                   )
                 ],
               ),
