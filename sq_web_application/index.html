@@ -87,6 +87,10 @@
           status.innerHTML =
             'Status: <span class="disconnected">Disconnected</span>'
         })
+
+        sendColorBtn.addEventListener("click",()=>{
+          socket.send(JSON.stringify({"color-input":colorInput.value}))
+        })
       }
 
       // Connect to the server
