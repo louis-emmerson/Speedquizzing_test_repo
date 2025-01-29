@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(left: 5,right: 5,top: 20),
+              margin: const EdgeInsets.only(left: 5, right: 5, top: 20),
               child: TextField(
                 controller: msgTextController,
                 decoration: const InputDecoration(
@@ -119,6 +119,22 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => {_sendTextMsg(msgTextController.text)},
               child: const Text("Send Message"),
             ),
+            Container(
+              margin: const EdgeInsets.only(top: 20),
+              child: Column(
+                children: [
+                  const Text(
+                    "Color from web app",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height: 300,
+                    decoration: const BoxDecoration(color: Colors.grey),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),
