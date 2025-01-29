@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
-import 'custom_button.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 void main() {
   runApp(const MyApp());
+  // Dart client
+  IO.Socket socket = IO.io('http://localhost:3000');
+  socket.onConnect((_) {
+    print('connect');
+    socket.emit('msg', 'test');
+  });
+  socket.on('event', (data) => print(data));
+  socket.onDisconnect((_) => print('disconnect'));
+  socket.on('fromServer', (_) => print(_));
 }
 
 class MyApp extends StatelessWidget {
@@ -27,36 +36,57 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  late IO.Socket socket;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
+  @override
+  void initState() {
+    super.initState();
+    _connectSocket();
+  }
+
+  void _connectSocket() {
+    socket = IO.io(
+      'http://localhost:5500',
+      IO.OptionBuilder().setTransports(['websocket']).build(),
+    );
+
+    socket.onConnect((_) {
+      print('Connected to server');
     });
+
+    socket.onDisconnect((_) {
+      print('Disconnected from server');
+    });
+  }
+
+  void _updateColor(String color) {
+    socket.emit('msg',color);
+    debugPrint('Sent color: $color');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            ElevatedButton(
+              onPressed: () => _updateColor("red"),
+              child: const Text("Red"),
             ),
-            CustomButton(
-              label: 'Increment',
-              onPressed: _incrementCounter,
+            ElevatedButton(
+              onPressed: () => _updateColor("blue"),
+              child: const Text("Blue"),
+            ),
+            ElevatedButton(
+              onPressed: () => _updateColor("green"),
+              child: const Text("Green"),
             ),
           ],
-        ),
-      ),
-    );
+        ));
   }
 }
