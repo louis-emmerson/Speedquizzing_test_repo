@@ -9,17 +9,30 @@
     <h1>SpeedQuizzing Web App</h1>
 
     <!-- Display incoming messages -->
-    <div id="log">
-      <button id="red-button" style="background-color: white; color:black; border:solid red 2px;">
-        Red Button
-      </button>
-      <button id="blue-button" style="background-color: white; color:black; border:solid blue 2px;">
-        Blue Button
-      </button>
-      <button id="green-button" style="background-color: white; color:black; border:solid green 2px;">
-        Green Button
-      </button>
-    </div>
+    <button
+      id="red-button"
+      style="background-color: white; color: black; border: solid red 2px"
+    >
+      Red Button
+    </button>
+    <button
+      id="blue-button"
+      style="background-color: white; color: black; border: solid blue 2px"
+    >
+      Blue Button
+    </button>
+    <button
+      id="green-button"
+      style="
+        background-color: white;
+        color: black;
+        border: solid green 2px;
+        margin-bottom: 5px;
+      "
+    >
+      Green Button
+    </button>
+    <div id="log"></div>
 
     <!-- Color Picker and Button -->
     <div id="colorPicker">
@@ -42,7 +55,7 @@
 
       // Initialize WebSocket connection to the server
       function connectToServer() {
-        socket = new WebSocket("ws://localhost:5500") // Update to TCP if needed
+        socket = new WebSocket("ws://192.168.4.187:5500") // Update to TCP if needed
 
         // Update connection status
         socket.addEventListener("open", () => {
@@ -51,10 +64,22 @@
 
         socket.addEventListener("message", (msg) => {
           msg.data.text().then((data) => {
-            const colorMsg = JSON.parse(data)
-            const targetButton = `${colorMsg.color}-button`
-            document.getElementById(targetButton).style.background=colorMsg.color;
+            const msgData = JSON.parse(data)
+            if (Object.keys(msgData).includes("color")) {
+              const targetButton = `${msgData.color}-button`
+              document.getElementById(targetButton).style.background =
+                msgData.color
+            }
 
+            if (Object.keys(msgData).includes("message")) {
+              const date = new Date()
+              log.innerHTML += `
+              <p>
+                  ${date}
+              </p>
+              <h2>${msgData.message}</h2>
+              `
+            }
           })
         })
 
