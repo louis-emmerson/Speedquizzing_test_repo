@@ -1,17 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
   runApp(const MyApp());
-  // Dart client
-  IO.Socket socket = IO.io('http://localhost:3000');
-  socket.onConnect((_) {
-    print('connect');
-    socket.emit('msg', 'test');
-  });
-  socket.on('event', (data) => print(data));
-  socket.onDisconnect((_) => print('disconnect'));
-  socket.on('fromServer', (_) => print(_));
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +27,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late IO.Socket socket;
+  late WebSocketChannel channel;
 
   @override
   void initState() {
@@ -45,33 +36,41 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _connectSocket() {
-    socket = IO.io(
-      'http://localhost:5500',
-      IO.OptionBuilder().setTransports(['websocket']).build(),
+    channel = WebSocketChannel.connect(Uri.parse('ws://localhost:5500'));
+
+    channel.stream.listen(
+      (message) {
+        print('Message received: $message');
+      },
+      onDone: () {
+        print('Connection closed');
+      },
+      onError: (error) {
+        print('Error: $error');
+      },
     );
-
-    socket.onConnect((_) {
-      print('Connected to server');
-    });
-
-    socket.onDisconnect((_) {
-      print('Disconnected from server');
-    });
   }
 
   void _updateColor(String color) {
-    socket.emit('msg',color);
-    debugPrint('Sent color: $color');
+    channel.sink.add(color);
+    print('Sent color: $color');
+  }
+
+  @override
+  void dispose() {
+    channel.sink.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
-        ),
-        body: Column(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ElevatedButton(
@@ -87,6 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text("Green"),
             ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }
